@@ -1,0 +1,59 @@
+{
+    "flashicon": "https://a-lurker.github.io/icons/VirtualProntoRemote_50_50.png",
+    "default_icon": "https://a-lurker.github.io/icons/VirtualProntoRemote_50_50.png",
+    "inScene": "1",
+    "DisplayStatus": {},
+    "state_icons": [],
+    "doc_url": {
+        "doc_language": 1,
+        "doc_manual": 1,
+        "doc_version": 1,
+        "doc_platform": 0,
+        "doc_page": "devices"
+    },
+	"Tabs": [{
+			"Label": {
+				"lang_tag": "tabname_control",
+				"text": "Control"
+			},
+			"Position": 0,
+			"TabType": "flash",
+			"ControlGroup": [{
+				"id": 1,
+				"scenegroup": 1
+			}],
+			"SceneGroup": [{
+				"id": 1,
+				"top": 0,
+				"left": 0,
+				"x": 1,
+				"y": 1
+			}],
+			"Control": [
+				{
+                    "ControlType": "label",
+                    "Label": {
+                        "text": "<a href='/port_3480/data_request?id=lr_al_ir_code_info' target='_blank'>IR remote(s) info page</a>"
+                    },
+                    "Display": {
+                        "Top": 20,
+                        "Left": 0,
+                        "Width": 50,
+                        "Height": 20
+                    }
+                }
+            ]
+        },
+        {
+            "Label": {
+                "lang_tag": "advanced",
+                "text": "Advanced"
+            },
+            "Position": "2",
+            "TabType": "javascript",
+            "ScriptName": "shared.js",
+            "Function": "advanced_device"
+        }
+    ],
+    "device_type": "urn:schemas-a-lurker-com:device:VirtualProntoRemote:1"
+}

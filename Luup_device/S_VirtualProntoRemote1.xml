@@ -1,0 +1,128 @@
+<?xml version="1.0"?>
+<scpd xmlns="urn:schemas-upnp-org:service-1-0">
+
+<specVersion>
+  <major>1</major>
+  <minor>0</minor>
+</specVersion>
+
+<serviceStateTable>
+
+  <stateVariable sendEvents="no">
+  <name>A_ARG_TYPE_Remote</name>
+  <shortCode>remote</shortCode>
+  <dataType>string</dataType>
+  </stateVariable>
+
+  <stateVariable sendEvents="no">
+  <name>A_ARG_TYPE_Function</name>
+  <shortCode>function</shortCode>
+  <dataType>string</dataType>
+  </stateVariable>
+
+  <stateVariable sendEvents="no">
+  <name>A_ARG_TYPE_Protocol</name>
+  <shortCode>protocol</shortCode>
+  <dataType>string</dataType>
+  </stateVariable>
+
+  <stateVariable sendEvents="no">
+  <name>A_ARG_TYPE_Device</name>
+  <shortCode>device</shortCode>
+  <dataType>string</dataType>
+  </stateVariable>
+
+  <stateVariable sendEvents="no">
+  <name>A_ARG_TYPE_Subdevice</name>
+  <shortCode>subdevice</shortCode>
+  <dataType>string</dataType>
+  </stateVariable>
+
+  <stateVariable sendEvents="no">
+  <name>A_ARG_TYPE_Function2</name>
+  <shortCode>function2</shortCode>
+  <dataType>string</dataType>
+  </stateVariable>
+
+  <stateVariable sendEvents="no">
+  <name>A_ARG_TYPE_Repeats</name>
+  <shortCode>repeats</shortCode>
+  <dataType>string</dataType>
+  </stateVariable>
+
+  <stateVariable sendEvents="no">
+  <name>A_ARG_TYPE_IRdevice</name>
+  <shortCode>irDevice</shortCode>
+  <dataType>string</dataType>
+  </stateVariable>
+
+  <stateVariable sendEvents="no">
+  <name>A_ARG_TYPE_IRserviceIdx</name>
+  <shortCode>irService</shortCode>
+  <dataType>string</dataType>
+  </stateVariable>
+
+</serviceStateTable>
+
+<actionList>
+
+  <action>
+     <name>SendRemoteCode</name>
+     <argumentList>
+        <argument>
+           <name>Remote</name>
+           <direction>in</direction>
+           <relatedStateVariable>A_ARG_TYPE_RemoteCode</relatedStateVariable>
+        </argument>
+        <argument>
+           <name>Function</name>
+           <direction>in</direction>
+           <relatedStateVariable>A_ARG_TYPE_Function</relatedStateVariable>
+        </argument>
+     </argumentList>
+  </action>
+
+  <action>
+     <name>SendIRPCode</name>
+     <argumentList>
+        <argument>
+           <name>Protocol</name>
+           <direction>in</direction>
+           <relatedStateVariable>A_ARG_TYPE_Protocol</relatedStateVariable>
+        </argument>
+        <argument>
+           <name>Device</name>
+           <direction>in</direction>
+           <relatedStateVariable>A_ARG_TYPE_Device</relatedStateVariable>
+        </argument>
+        <argument>
+           <name>Subdevice</name>
+           <direction>in</direction>
+           <relatedStateVariable>A_ARG_TYPE_Subdevice</relatedStateVariable>
+        </argument>
+        <argument>
+           <name>Function</name>
+           <direction>in</direction>
+           <relatedStateVariable>A_ARG_TYPE_Function2</relatedStateVariable>
+        </argument>
+        <argument>
+           <name>Repeats</name>
+           <direction>in</direction>
+           <relatedStateVariable>A_ARG_TYPE_Repeats</relatedStateVariable>
+        </argument>
+        <argument>
+           <name>IRdevice</name>
+           <direction>in</direction>
+           <relatedStateVariable>A_ARG_TYPE_IRdevice</relatedStateVariable>
+        </argument>
+        <argument>
+           <name>IRserviceIdx</name>
+           <direction>in</direction>
+           <relatedStateVariable>A_ARG_TYPE_IRserviceIdx</relatedStateVariable>
+        </argument>
+     </argumentList>
+  </action>
+
+</actionList>
+
+</scpd>

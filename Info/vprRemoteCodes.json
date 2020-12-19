@@ -1,0 +1,393 @@
+{
+  "Remote 1" :
+  {
+    "IRemitter"   : {"Device" : "164", "ServiceIdx" : "2"},
+    "Model"       : "Denon Amp",
+    "Encoding"    : {"Protocol" : "DENON", "Device" : "2", "Subdevice" : "-1", "LSBfirst" : true},
+    "Functions"   : {
+      "Power On"  : {"Fnc" : "225", "Note" : ""}
+    }
+  },
+
+  "Remote 2" :
+  {
+    "IRemitter"   : {"Device" : "164", "ServiceIdx" : "2"},
+    "Model"       : "Panasonic TH-P42S10A plasma TV (Kaseikyo family)",
+    "Encoding"    : {"Protocol" : "PANASONIC", "Device" : "128", "Subdevice" : "0", "LSBfirst" : true},
+    "Functions"   : {
+      "Power"     : {"Fnc" :  "61", "Note" : "Toggle"},
+      "Power On"  : {"Fnc" :  "62", "Note" : "Discrete on"},
+      "Power Off" : {"Fnc" :  "63", "Note" : "Discrete off - may not work if screen showing TV"},
+
+      "Vol Up"    : {"Fnc" :  "32", "Note" : ""},
+      "Vol Down"  : {"Fnc" :  "33", "Note" : ""},
+      "Mute"      : {"Fnc" :  "50", "Note" : "Toggle"},
+
+      "Menu"      : {"Fnc" :  "82", "Note" : ""},
+      "Select"    : {"Fnc" :  "73", "Note" : ""},
+      "Exit"      : {"Fnc" : "212", "Note" : ""},
+
+      "IP A/TV"   : {"Fnc" :   "0", "Note" : ""},
+      "IP Vid 1"  : {"Fnc" :   "1", "Note" : ""},
+      "IP Vid 2"  : {"Fnc" :   "2", "Note" : ""}
+    }
+  },
+
+  "Remote 3" :
+  {
+    "IRemitter"  : {"Device" : "164", "ServiceIdx" : "2"},
+    "Model"      : "Topfield PVR TRF-2460",
+    "Encoding"   : {"Protocol" : "NEC2", "Device" : "0x0a", "Subdevice" : "0x80", "LSBfirst" : false},
+    "Functions"  : {
+      "Power"    : {"Fnc" : "0x50", "Note" : "Toggle - NEC2, device 80, subdevice 1, OBC 10"},
+
+      "Vol Up"   : {"Fnc" : "0xC6", "Note" : ""},
+      "Vol Down" : {"Fnc" : "0x26", "Note" : ""},
+      "Mute"     : {"Fnc" : "0x30", "Note" : "Toggle - NEC2, device 80, subdevice 1, OBC 12"},
+
+      "Chn Up"   : {"Fnc" : "0x86", "Note" : ""},
+      "Chn Down" : {"Fnc" : "0x46", "Note" : ""},
+
+      "0"        : {"Fnc" : "0x08", "Note" : ""},
+      "1"        : {"Fnc" : "0x88", "Note" : ""},
+      "2"        : {"Fnc" : "0x48", "Note" : ""},
+      "3"        : {"Fnc" : "0xC8", "Note" : ""},
+      "4"        : {"Fnc" : "0x28", "Note" : ""},
+      "5"        : {"Fnc" : "0xA8", "Note" : ""},
+      "6"        : {"Fnc" : "0x68", "Note" : ""},
+      "7"        : {"Fnc" : "0xE8", "Note" : ""},
+      "8"        : {"Fnc" : "0x18", "Note" : ""},
+      "9"        : {"Fnc" : "0x98", "Note" : ""},
+
+      "Menu"     : {"Fnc" : "0x58", "Note" : ""},
+      "Info"     : {"Fnc" : "0xB8", "Note" : ""},
+      "Exit"     : {"Fnc" : "0x38", "Note" : ""},
+      "Guide"    : {"Fnc" : "0xD8", "Note" : "Toggle"},
+      "Text"     : {"Fnc" : "0xE2", "Note" : ""},
+
+      "Cursor L" : {"Fnc" : "0xC0", "Note" : ""},
+      "Cursor R" : {"Fnc" : "0x40", "Note" : ""},
+      "OK"       : {"Fnc" : "0xF8", "Note" : ""},
+      "Cursor U" : {"Fnc" : "0x00", "Note" : ""},
+      "Cursor D" : {"Fnc" : "0x80", "Note" : ""},
+
+      "Fast Fwd" : {"Fnc" : "0x12", "Note" : "Each time sent: speed doubles"},
+      "Pause"    : {"Fnc" : "0x60", "Note" : "Toggle"},
+      "Fast Rwd" : {"Fnc" : "0xa2", "Note" : "Each time sent: speed doubles"},
+      "Play"     : {"Fnc" : "0x62", "Note" : ""},
+      "Stop"     : {"Fnc" : "0x52", "Note" : ""},
+      "Rec"      : {"Fnc" : "0xd2", "Note" : ""},
+
+      "Red"      : {"Fnc" : "0xB2", "Note" : ""},
+      "Green"    : {"Fnc" : "0xB0", "Note" : ""},
+      "Yellow"   : {"Fnc" : "0x70", "Note" : ""},
+      "Blue"     : {"Fnc" : "0xF0", "Note" : ""}
+    }
+  },
+
+  "Remote 4" :
+  {
+    "IRemitter"   : {"Device" : "164", "ServiceIdx" : "2"},
+    "Model"       : "Samsung TV LA32C650LIF",
+    "Encoding"    : {"Protocol" : "NECx2", "Device" : "7", "Subdevice" : "7", "LSBfirst" : true},
+    "Functions"   : {
+      "Power"     : {"Fnc" :   "2", "Note" : "Toggle"},
+      "Power On"  : {"Fnc" : "153", "Note" : "Discrete on"},
+      "Power Off" : {"Fnc" : "152", "Note" : "Discrete off"},
+
+      "Vol Up"    : {"Fnc" :   "7", "Note" : ""},
+      "Vol Down"  : {"Fnc" :  "11", "Note" : ""},
+      "Mute"      : {"Fnc" :  "15", "Note" : "Toggle"},
+
+      "Chn Up"    : {"Fnc" :  "18", "Note" : ""},
+      "Chn Down"  : {"Fnc" :  "16", "Note" : ""},
+
+      "0"         : {"Fnc" :  "17", "Note" : ""},
+      "1"         : {"Fnc" :   "4", "Note" : ""},
+      "2"         : {"Fnc" :   "5", "Note" : ""},
+      "3"         : {"Fnc" :   "6", "Note" : ""},
+      "4"         : {"Fnc" :   "8", "Note" : ""},
+      "5"         : {"Fnc" :   "9", "Note" : ""},
+      "6"         : {"Fnc" :  "10", "Note" : ""},
+      "7"         : {"Fnc" :  "12", "Note" : ""},
+      "8"         : {"Fnc" :  "13", "Note" : ""},
+      "9"         : {"Fnc" :  "14", "Note" : ""},
+
+      "Menu"      : {"Fnc" :  "26", "Note" : ""},
+      "Info"      : {"Fnc" :  "31", "Note" : ""},
+      "Exit"      : {"Fnc" :  "45", "Note" : ""},
+      "Guide"     : {"Fnc" :  "79", "Note" : "Toggle"},
+      "Smart Hub" : {"Fnc" : "140", "Note" : "Toggle"},
+
+      "Cursor L"  : {"Fnc" : "101", "Note" : ""},
+      "Cursor R"  : {"Fnc" :  "98", "Note" : ""},
+      "Enter"     : {"Fnc" : "104", "Note" : ""},
+      "Cursor U"  : {"Fnc" :  "96", "Note" : ""},
+      "Cursor D"  : {"Fnc" :  "97", "Note" : ""},
+
+      "Fast Fwd"  : {"Fnc" :  "72", "Note" : "Each time sent: speed doubles"},
+      "Pause"     : {"Fnc" :  "74", "Note" : "Toggle"},
+      "Fast Rwd"  : {"Fnc" :  "69", "Note" : "Each time sent: speed doubles"},
+      "Play"      : {"Fnc" :  "71", "Note" : ""},
+      "Stop"      : {"Fnc" :  "70", "Note" : ""},
+
+      "Red"       : {"Fnc" : "108", "Note" : ""},
+      "Green"     : {"Fnc" :  "20", "Note" : ""},
+      "Yellow"    : {"Fnc" :  "21", "Note" : ""},
+      "Blue"      : {"Fnc" :  "22", "Note" : ""},
+
+      "TV"        : {"Fnc" :  "27", "Note" : "Discrete"},
+      "HDMI 1"    : {"Fnc" : "233", "Note" : "Discrete"},
+      "HDMI 2"    : {"Fnc" : "190", "Note" : "Discrete"},
+      "HDMI 3"    : {"Fnc" : "194", "Note" : "Discrete"},
+      "HDMI 4"    : {"Fnc" : "197", "Note" : "Discrete - side socket"}
+    }
+  },
+
+  "Remote 5" :
+  {
+    "IRemitter"    : {"Device" : "164", "ServiceIdx" : "2"},
+    "Model"        : "Pioneer VSX-455 AVR",
+    "Encoding"     : {"Protocol" : "Pioneer", "Device" : "165", "Subdevice" : "-1", "LSBfirst" : true},
+    "Functions"    : {
+      "Power"      : {"Fnc" : "28", "Note" : "Toggle"},
+      "Power On"   : {"Fnc" : "26", "Note" : "Discrete on"},
+      "Power Off"  : {"Fnc" : "27", "Note" : "Discrete off"},
+
+      "Vol Up"     : {"Fnc" : "10", "Note" : ""},
+      "Vol Down"   : {"Fnc" : "11", "Note" : ""},
+      "Mute"       : {"Fnc" : "18", "Note" : "Toggle"},
+      "Mute On"    : {"Fnc" : "81", "Note" : "Discrete"},
+      "Mute Off"   : {"Fnc" : "82", "Note" : "Discrete"},
+
+      "VCR/Tape 1" : {"Fnc" : "15", "Note" : "Discrete"},
+      "Mon/Tape 2" : {"Fnc" : "29", "Note" : "Toggle"},
+      "Phono"      : {"Fnc" : "77", "Note" : "Discrete"},
+      "Tuner"      : {"Fnc" : "71", "Note" : "Discrete"},
+      "LD/DVD"     : {"Fnc" : "13", "Note" : "Discrete"},
+      "CD"         : {"Fnc" : "76", "Note" : "Discrete"},
+
+      "Fnc Ext 1"  : {"Fnc" : "86", "Note" : "Lead in 1 = 0x56 = 86d"},
+      "Fnc Ext 2"  : {"Fnc" : "87", "Note" : "Lead in 2 = 0x57 = 87d"},
+      "Fnc Ext 3"  : {"Fnc" : "89", "Note" : "Lead in 3 = 0x59 = 89d"},
+
+      "Jog Mode"   : {"Fnc" : "89", "Note" : "Send Fnc Ext 1 first - toggle"},
+      "Jog Up"     : {"Fnc" :  "8", "Note" : "Send Fnc Ext 2 first"},
+      "Jog Down"   : {"Fnc" :  "9", "Note" : "Send Fnc Ext 2 first"},
+
+      "Speakers A" : {"Fnc" :  "0", "Note" : "Send Fnc Ext 3 first - toggle"},
+      "Speakers B" : {"Fnc" :  "1", "Note" : "Send Fnc Ext 3 first - toggle"}
+    }
+  },
+
+  "Remote 6" :
+  {
+    "IRemitter" : {"Device" : "164", "ServiceIdx" : "2"},
+    "Model"     : "LG TV",
+    "Encoding"  : {"Protocol" : "RAW", "Device" : "?", "Subdevice" : "?"},
+    "Functions" : {
+    "Power 1"   : {"Fnc"  : [9024,-4512,564,-564,564,-564,564,-1692,564,-564,564,-564,564,-564,564,-564,564,-564,564,-1692,564,-1692,564,-564,564,-1692,564,-1692,564,-1692,564,-1692,564,-1692,564,-564,564,-564,564,-564,564,-1692,564,-564,564,-564,564,-564,564,-564,564,-1692,564,-1692,564,-1692,564,-564,564,-1692,564,-1692,564,-1692,564,-1692,564,-39756],
+                   "Note" : "Example Raw code for: Protocol NEC1, device 4, subdevice -1, OBC 8",
+                   "Freq" : "38000"},
+
+    "Power 2"   : {"Fnc"  : [128, 64, 16, 16, 16, 48, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 48, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 48, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 48, 16, 48, 16, 48, 16, 48, 16, 48, 16, 48, 16, 16, 16, 16, 16, 48, 16, 48, 16, 48, 16, 48, 16, 48, 16, 48, 16, 16, 16, 48, 16, 4719],
+                   "Note" : "PbG",
+                   "Freq" : "36873"}
+
+    }
+  },
+
+  "Remote 7" :
+  {
+    "IRemitter"   : {"Device" : "164", "ServiceIdx" : "2"},
+    "Model"       : "Philips TV",
+    "Encoding"    : {"Protocol" : "RC5", "Device" : "0", "Subdevice" : "-1"},
+    "Functions"   : {
+      "Power"     : {"Fnc" : "12", "Note" : "Toggle"},
+      "Power On"  : {"Fnc" : "63", "Note" : "Discrete on"},
+      "Power Off" : {"Fnc" : "61", "Note" : "Discrete off"},
+
+      "Vol Up"    : {"Fnc" : "16", "Note" : ""},
+      "Vol Down"  : {"Fnc" : "17", "Note" : ""},
+      "Mute"      : {"Fnc" : "13", "Note" : "Toggle"}
+    }
+  },
+
+  "Remote 8" :
+  {
+    "IRemitter"   : {"Device" : "164", "ServiceIdx" : "2"},
+    "Model"       : "Sharp",
+    "Encoding"    : {"Protocol" : "SHARP", "Device" : "1", "Subdevice" : "-1", "LSBfirst" : true},
+    "Functions"   : {
+      "Power"  : {"Fnc" : "22", "Note" : "Toggle"}
+    }
+  },
+
+  "Remote 9" :
+  {
+    "IRemitter"   : {"Device" : "164", "ServiceIdx" : "2"},
+    "Model"       : "Sony TV 12 bit",
+    "Encoding"    : {"Protocol" : "Sony12", "Device" : "1", "Subdevice" : "-1", "LSBfirst" : true, "Repeats" : "1"},
+    "Functions"   : {
+      "Power"     : {"Fnc" : "21", "Note" : "Toggle"},
+      "Power On"  : {"Fnc" : "46", "Note" : "Discrete on"},
+      "Power Off" : {"Fnc" : "47", "Note" : "Discrete off"}
+    }
+  },
+
+  "Remote 10" :
+  {
+    "IRemitter"  : {"Device" : "164", "ServiceIdx" : "2"},
+    "Model"      : "Sony TV 15 bit",
+    "Encoding"   : {"Protocol" : "Sony15", "Device" : "84", "Subdevice" : "-1", "LSBfirst" : true, "Repeats" : "1"},
+    "Functions"  : {
+      "Power On" : {"Fnc" : "46", "Note" : "Discrete on"}
+    }
+  },
+
+  "Remote 11" :
+  {
+    "IRemitter"  : {"Device" : "164", "ServiceIdx" : "2"},
+    "Model"      : "Sony DVD 20 bit",
+    "Encoding"   : {"Protocol" : "Sony20", "Device" : "26", "Subdevice" : "73", "LSBfirst" : true, "Repeats" : "1"},
+    "Functions"  : {
+      "Power"    : {"Fnc" : "21", "Note" : "Toggle"}
+    }
+  },
+
+  "Remote 12" :
+  {
+    "IRemitter"   : {"Device" : "164", "ServiceIdx" : "2"},
+    "Model"       : "Sony Amp STR K* series 15 bit",
+    "Encoding"    : {"Protocol" : "Sony15", "Device" : "48", "Subdevice" : "-1", "LSBfirst" : true, "Repeats" : "2"},
+    "Functions"   : {
+      "Power On"  : {"Fnc" : "46", "Note" : "Discrete on"},
+      "Power Off" : {"Fnc" : "47", "Note" : "Discrete off"}
+    }
+  },
+
+  "Remote 13" :
+  {
+    "IRemitter"   : {"Device" : "164", "ServiceIdx" : "2"},
+    "Model"       : "Yamaha RX-V673",
+    "Encoding"    : {"Protocol" : "NEC2", "Device" : "122", "Subdevice" : "-1", "LSBfirst" : true},
+    "Functions"   : {
+      "Power On"  : {"Fnc" : "29", "Note" : "Discrete on"},
+      "Power Off" : {"Fnc" : "30", "Note" : "Discrete off"},
+
+      "Vol Up"    : {"Fnc" : "26", "Note" : "+0.5 dB"},
+      "Vol Down"  : {"Fnc" : "27", "Note" : "-0.5 dB"},
+      "Mute"      : {"Fnc" : "28", "Note" : "Toggle"},
+
+      "Vol Up 2"   : {"Fnc" : "218", "Note" : "Zone 2"},
+      "Vol Down 2" : {"Fnc" : "219", "Note" : "Zone 2"},
+
+      "Vol Up 3"   : {"Fnc" : "253", "Note" : "Zone 3?"},
+      "Vol Down 3" : {"Fnc" : "254", "Note" : "Zone 3?"}
+    }
+  },
+
+  "Remote 14" :
+  {
+    "IRemitter"    : {"Device" : "164", "ServiceIdx" : "2"},
+    "Model"        : "44 Key RGB LED strip controller",
+    "Encoding"     : {"Protocol" : "NEC2", "Device" : "0x00", "Subdevice" : "-1", "LSBfirst" : false},
+    "Functions"    : {
+      "Brightness up"       : {"Fnc" : "0x3A", "Note" : "7 steps"},
+      "Brightness down"     : {"Fnc" : "0xBA", "Note" : "7 steps"},
+      "Pause/Run"           : {"Fnc" : "0x82", "Note" : "Toggle"},
+      "On/Off"              : {"Fnc" : "0x02", "Note" : ""},
+      "Red"                 : {"Fnc" : "0x1A", "Note" : ""},
+      "Green"               : {"Fnc" : "0x9A", "Note" : ""},
+      "Blue"                : {"Fnc" : "0xA2", "Note" : ""},
+      "White"               : {"Fnc" : "0x22", "Note" : ""},
+      "Orange"              : {"Fnc" : "0x2A", "Note" : ""},
+      "Pea green"           : {"Fnc" : "0xAA", "Note" : ""},
+      "Dark blue"           : {"Fnc" : "0x92", "Note" : ""},
+      "Off white"           : {"Fnc" : "0x12", "Note" : ""},
+      "Dark yellow"         : {"Fnc" : "0x0A", "Note" : ""},
+      "Cyan"                : {"Fnc" : "0x8A", "Note" : ""},
+      "Royal blue"          : {"Fnc" : "0xB2", "Note" : ""},
+      "Light pink"          : {"Fnc" : "0x32", "Note" : ""},
+      "Yellow"              : {"Fnc" : "0x38", "Note" : ""},
+      "Light blue"          : {"Fnc" : "0xB8", "Note" : ""},
+      "Pink"                : {"Fnc" : "0x78", "Note" : ""},
+      "Green white"         : {"Fnc" : "0xF8", "Note" : ""},
+      "Light yellow"        : {"Fnc" : "0x18", "Note" : ""},
+      "Sky blue"            : {"Fnc" : "0x98", "Note" : ""},
+      "Brown"               : {"Fnc" : "0x58", "Note" : ""},
+      "Blue white"          : {"Fnc" : "0xD8", "Note" : ""},
+      "Increase red"        : {"Fnc" : "0x28", "Note" : ""},
+      "Increase green"      : {"Fnc" : "0xA8", "Note" : ""},
+      "Increase blue"       : {"Fnc" : "0x68", "Note" : ""},
+      "Speed up"            : {"Fnc" : "0xE8", "Note" : ""},
+      "Decrease red"        : {"Fnc" : "0x08", "Note" : ""},
+      "Decrease green"      : {"Fnc" : "0x88", "Note" : ""},
+      "Decrease blue"       : {"Fnc" : "0x48", "Note" : ""},
+      "Speed down"          : {"Fnc" : "0xC8", "Note" : ""},
+      "Mem 1"               : {"Fnc" : "0x30", "Note" : ""},
+      "Mem 2"               : {"Fnc" : "0xB0", "Note" : ""},
+      "Mem 3"               : {"Fnc" : "0x70", "Note" : ""},
+      "Automatic change"    : {"Fnc" : "0xF0", "Note" : ""},
+      "Mem 4"               : {"Fnc" : "0x10", "Note" : ""},
+      "Mem 5"               : {"Fnc" : "0x90", "Note" : ""},
+      "Mem 6"               : {"Fnc" : "0x50", "Note" : ""},
+      "Flash on and off"    : {"Fnc" : "0xD0", "Note" : ""},
+      "3 color change"      : {"Fnc" : "0x20", "Note" : ""},
+      "7 color change"      : {"Fnc" : "0xA0", "Note" : ""},
+      "3 color fade change" : {"Fnc" : "0x60", "Note" : ""},
+      "7 color fade change" : {"Fnc" : "0xE0", "Note" : ""}
+    }
+  },
+
+  "Remote 15" :
+  {
+    "IRemitter"   : {"Device" : "164", "ServiceIdx" : "2"},
+    "Model"       : "LG plasma TV 50PQ60D-AA",
+    "Encoding"    : {"Protocol" : "NEC2", "Device" : "4", "Subdevice" : "-1", "LSBfirst" : true},
+    "Functions"   : {
+      "Power"     : {"Fnc" :   "8", "Note" : "Toggle"},
+      "Power On"  : {"Fnc" : "196", "Note" : "Discrete on"},
+      "Power Off" : {"Fnc" : "197", "Note" : "Discrete off"},
+
+      "Vol Up"    : {"Fnc" :   "2", "Note" : ""},
+      "Vol Down"  : {"Fnc" :   "3", "Note" : ""},
+      "Mute"      : {"Fnc" :   "9", "Note" : "Toggle"},
+
+      "Chn Up"    : {"Fnc" :   "0", "Note" : ""},
+      "Chn Down"  : {"Fnc" :   "1", "Note" : ""},
+
+      "0"         : {"Fnc" :  "16", "Note" : ""},
+      "1"         : {"Fnc" :  "17", "Note" : ""},
+      "2"         : {"Fnc" :  "18", "Note" : ""},
+      "3"         : {"Fnc" :  "19", "Note" : ""},
+      "4"         : {"Fnc" :  "20", "Note" : ""},
+      "5"         : {"Fnc" :  "21", "Note" : ""},
+      "6"         : {"Fnc" :  "22", "Note" : ""},
+      "7"         : {"Fnc" :  "23", "Note" : ""},
+      "8"         : {"Fnc" :  "24", "Note" : ""},
+      "9"         : {"Fnc" :  "25", "Note" : ""},
+
+      "Menu"      : {"Fnc" :  "67", "Note" : ""},
+      "Info"      : {"Fnc" : "170", "Note" : ""},
+      "Rt/Ext/Bk" : {"Fnc" :  "40", "Note" : ""},
+      "Guide"     : {"Fnc" : "171", "Note" : "Toggle"},
+
+      "Cursor L"  : {"Fnc" :   "7", "Note" : ""},
+      "Cursor R"  : {"Fnc" :   "6", "Note" : ""},
+      "Cursor U"  : {"Fnc" :  "64", "Note" : ""},
+      "Cursor D"  : {"Fnc" :  "65", "Note" : ""},
+
+      "Red"       : {"Fnc" : "114", "Note" : ""},
+      "Green"     : {"Fnc" : "113", "Note" : ""},
+      "Yellow"    : {"Fnc" :  "99", "Note" : ""},
+      "Blue"      : {"Fnc" :  "97", "Note" : ""},
+
+      "TV"        : {"Fnc" : "214", "Note" : "Discrete"},
+      "HDMI 1"    : {"Fnc" : "206", "Note" : "Discrete"},
+      "HDMI 2"    : {"Fnc" : "204", "Note" : "Discrete"},
+      "HDMI 3"    : {"Fnc" : "233", "Note" : "Discrete"},
+      "HDMI 4"    : {"Fnc" : "218", "Note" : "Discrete"}
+    }
+  }
+}

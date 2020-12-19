@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<implementation>
+  <files>L_VirtualProntoRemote1.lua</files>
+  <startup>luaStartUp</startup>
+
+  <actionList>
+
+    <action>
+      <serviceId>urn:a-lurker-com:serviceId:VirtualProntoRemote1</serviceId>
+      <name>SendRemoteCode</name>
+      <run>
+        sendRemoteCode(lul_settings.Remote,lul_settings.Function)
+      </run>
+    </action>
+
+    <action>
+      <serviceId>urn:a-lurker-com:serviceId:VirtualProntoRemote1</serviceId>
+      <name>SendIRPCode</name>
+      <run>
+        sendIRPCode(lul_settings.Protocol,lul_settings.Device,lul_settings.Subdevice,lul_settings.Function,lul_settings.Repeats,lul_settings.IRdevice,lul_settings.IRserviceIdx)
+      </run>
+    </action>
+
+  </actionList>
+</implementation>

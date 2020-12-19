@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root xmlns="urn:schemas-upnp-org:device-1-0">
+   <specVersion>
+      <major>1</major>
+      <minor>0</minor>
+   </specVersion>
+   <device>
+      <deviceType>urn:schemas-a-lurker-com:device:VirtualProntoRemote:1</deviceType>
+      <friendlyName>Virtual Pronto Remote</friendlyName>
+      <manufacturer>A Lurker</manufacturer>
+      <staticJson>D_VirtualProntoRemote1.json</staticJson>
+      <serviceList>
+         <service>
+            <serviceType>urn:schemas-a-lurker-com:service:VirtualProntoRemote:1</serviceType>
+            <serviceId>urn:a-lurker-com:serviceId:VirtualProntoRemote1</serviceId>
+            <SCPDURL>S_VirtualProntoRemote1.xml</SCPDURL>
+         </service>
+      </serviceList>
+      <implementationList>
+         <implementationFile>I_VirtualProntoRemote1.xml</implementationFile>
+      </implementationList>
+   </device>
+</root>
