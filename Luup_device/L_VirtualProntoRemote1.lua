@@ -1,4 +1,4 @@
--- a-lurker, copyright, 19 Dec 2020
+-- a-lurker, copyright, 19 Dec 2020. Updated 7 Feb 2021.
 -- Setup virtual remotes via a JSON file.
 
 --[[
@@ -34,6 +34,7 @@
         MITSUBISHI - similar to JVC
         NEC        - Canon, Harman/Kardon, Hitachi, JVC, NEC, Onkyo, Pioneer, Sharp, Toshiba, Yamaha, and many other Japanese manufacturers
         RC5        - Philips and other manufacturers in Europe
+        RC6        - Microsoft Media Center MCE, Sky TV, etc
         SAMSUNG    - Samsung
         SIRCS      - Sony12,15,20
 
@@ -45,11 +46,13 @@
 
 local PLUGIN_NAME     = 'VirtualProntoRemote'
 local PLUGIN_SID      = 'urn:a-lurker-com:serviceId:'..PLUGIN_NAME..'1'
-local PLUGIN_VERSION  = '0.51'
+local PLUGIN_VERSION  = '0.52'
 local THIS_LUL_DEVICE = nil
 
 local PLUGIN_URL_ID   = 'al_ir_code_info'
 
+local m_testing       = false
+local m_mceToggle     = false
 local m_json          = nil
 local m_remoteList    = nil
 local m_IRclk         = nil
@@ -89,6 +92,14 @@ local m_kFamily = {
     ['MITSUBISHI-K'] = {m=35,  n=203},   -- will not function without further coding of ir code data mapping
     ['SHARPDVD']     = {m=170, n=90},    -- will not function without further coding of ir code data mapping
     ['TEAC-K']       = {m=67,  n=83}     -- will not function without further coding of ir code data mapping
+}
+
+local m_rc6Family = {
+    ['MCE']        = true,
+    ['RC6']        = true,
+    ['RC6-0-16']   = true,
+    ['RC6-6-20']   = true,
+    ['RC6-6-32']   = true
 }
 
 -- Don't change this, it won't do anything. Use the DebugEnabled flag instead
@@ -131,7 +142,7 @@ local function updateVariable(varK, varV, sid, id)
     debug(newValue..' --> '..varK)
 
     local currentValue = luup.variable_get(sid, varK, id)
-    if ((currentValue ~= newValue) or (currentValue == nil)) then
+    if (((currentValue ~= newValue) or (currentValue == nil)) and (not m_testing)) then
         luup.variable_set(sid, varK, newValue, id)
         -- debug(sid,varK,newValue,id)
     end
@@ -396,6 +407,25 @@ local function rc5Check(remoteName, remote, protocol, srcD, srcS)
     return ok
 end
 
+local function rc6Check(remoteName, remote, protocol, srcD, srcS)
+    local ok = true
+    local srcF
+
+    if (((protocol == 'RC6-6-32') or (protocol == 'MCE')) and (srcD > 0x7f)) then debug('json: '..remoteName..': Device value is out of range.',50) return false end
+    if ((protocol == 'RC6-6-20') and (srcS > 0x0f)) then debug('json: '..remoteName..': Subdevice value is out of range.',50) return false end
+
+    -- MSB is transmitted first
+    for _,btn in pairs(remote.Functions) do
+        ok, srcF = validateFunctionInfo(remoteName, btn.Fnc, 0xff)
+        if (not ok) then break end
+
+        btn.CmdOBC = {obcD=srcD, obcS=srcS, obcF=srcF}   -- srcS is typically: -1, 12 or 15
+        -- this is the info used to make the Pronto Codes
+        btn.CmdBytes = {byteD=srcD, byteS=srcS, byteF=srcF}
+    end
+    return ok
+end
+
 local function rcaCheck(remoteName, remote, protocol, srcD, srcS)
     local ok = true
     local srcF
@@ -505,23 +535,6 @@ local function necVariantsCheck(remoteName, remote, protocol, srcD, srcS)
     return ok
 end
 
--- Set up a jump table for each protocol in the routines shown above
-local m_checkActions = {
-    ['DENON']      = necVariantsCheck,
-    ['GC100']      = gc100Check,
-    ['JVC']        = necVariantsCheck,
-    ['KFAMILY']    = kaseikyoCheck,   -- there are more IRP protocols contained in the Kaseikyo family. Refer to m_kFamily.
-    ['MITSUBISHI'] = necVariantsCheck,
-    ['PRONTO']     = prontoCheck,
-    ['RAW']        = rawCheck,
-    ["RC5"]        = rc5Check,
-    ['RCA']        = rcaCheck,
-    ['SHARP']      = necVariantsCheck,
-    ['SONY12']     = sonyCheck,
-    ['SONY15']     = sonyCheck,
-    ['SONY20']     = sonyCheck
-}
-
 -- Check the values in a single remote are OK and manipulate the data a little further, to suit the associated protocol.
 local function validateAndMassageCode(remoteName, remote)
     local ok = true
@@ -549,9 +562,29 @@ local function validateAndMassageCode(remoteName, remote)
     local case = protocol
     -- test purposes only
     -- print('Validating: '..remoteName..': '..case)
-    if (m_kFamily[protocol]) then case = 'KFAMILY' end
-    if (m_checkActions[case]) then -- execute the function that does the work
-        ok = m_checkActions[case](remoteName, remote, protocol, srcD, srcS)
+    if (m_kFamily  [protocol]) then case = 'KFAMILY'   end
+    if (m_rc6Family[protocol]) then case = 'RC6FAMILY' end
+
+    -- Set up a jump table for each protocol in the routines shown above
+    local checkActions = {
+        ['DENON']      = necVariantsCheck,
+        ['GC100']      = gc100Check,
+        ['JVC']        = necVariantsCheck,
+        ['KFAMILY']    = kaseikyoCheck,   -- there are more IRP protocols contained in the Kaseikyo family. Refer to m_kFamily.
+        ['MITSUBISHI'] = necVariantsCheck,
+        ['PRONTO']     = prontoCheck,
+        ['RAW']        = rawCheck,
+        ["RC5"]        = rc5Check,
+        ['RC6FAMILY']  = rc6Check,
+        ['RCA']        = rcaCheck,
+        ['SHARP']      = necVariantsCheck,
+        ['SONY12']     = sonyCheck,
+        ['SONY15']     = sonyCheck,
+        ['SONY20']     = sonyCheck
+    }
+
+    if (checkActions[case]) then -- execute the function that does the work
+        ok = checkActions[case](remoteName, remote, protocol, srcD, srcS)
     else -- default: NEC, LG, PIONEER, SHARP, SAMSUNG, etc
         ok = necVariantsCheck(remoteName, remote, protocol, srcD, srcS)
     end
@@ -587,12 +620,17 @@ local function setClockRate(IRclkFrequency, basicTimeUnitDivisor)
     end
 
     -- The Pronto apparently used a Motorola DragonBall MC68328PV16VA
-    -- These CPUs typically used a 16.67 MHz xtal: divide that by 4 and you get
-    -- 4.16775 MHz. noting that PWM in the CPU has a minimum divide rate of 4
-    -- Does any one know the actual crystal frequency used in the Pronto?
-    -- This constant is found here: http://www.remotecentral.com/features/irdisp2.htm
-    -- 1e6/0.241246 = 4,145,146 Hz is commonly used:
-    local PRONTO_CLK = 4145146.0 -- Hz
+    -- The calculations are the same as or similar to these (but not proven definitively):
+    -- An inexpensive 32,768 Hz crystal is frequency multiplied by an onboard PLL with the default multiplier of 2024:
+    -- 32,768 * 2024 = 66,322,432 Hz
+    -- This is divided internally to make SYSCLK:
+    -- 66,322,432 / 4 = 16,580,608 Hz
+    -- The smallest prescaler divider for the PWM clock is 4:
+    -- 16,580,608 / 4 = 4,145,152 Hz
+    -- 1/4,145,152 = 0.241246 usec period
+    -- This same constant is used here: http://www.remotecentral.com/features/irdisp2.htm
+    -- So:  1e6 / 0.241246 = 4,145,146 Hz, which is virtually identical (within 6 Hz) to what has been calculated above.
+    local PRONTO_CLK = 4145152.0 -- Hz
 
     -- The CPU hardware divides by integers, so we find the nearest divisor
     -- that can most accurately produce the IR frequency requested. Example:
@@ -607,21 +645,21 @@ local function setClockRate(IRclkFrequency, basicTimeUnitDivisor)
     local basicTimeUnit = (m_basicTimeUnitDivisor * 1e3) / m_IRclk
 
     -- test purposes only
-    -- print(string.format('Target Hz: %.0f, actual Hz: %.3f, freq ratio: %.3f, divisor: %i, basic time unit msec: %.3f, basic time unit divisor: %i', IRclkFrequency, m_IRclk, (m_IRclk/IRclkFrequency), prontoDivisor, basicTimeUnit, m_basicTimeUnitDivisor))
+    if (m_testing) then
+        -- print(string.format('Target Hz: %.0f, actual Hz: %.3f, freq ratio: %.3f, divisor: %i, basic time unit msec: %.3f, basic time unit divisor: %i', IRclkFrequency, m_IRclk, (m_IRclk/IRclkFrequency), prontoDivisor, basicTimeUnit, m_basicTimeUnitDivisor))
+    end
 
     return string.format('%04X',prontoDivisor)
 end
 
--- Transform each data bit to a bi-phase space/pulse or pulse/space pair. The
--- boolean "motorola" is for any future development of that particular protocol
--- and is unused in this code so far.
-local function biphase(manchesterTab, binTab, activeBits, input)
-    local motorola = false
+-- Transform each data bit to a bi-phase space/pulse or pulse/space pair.
+local function biphase(manchesterTab, binTab, activeBits, input, logicOneIsOneZero)
+    -- start as RC5
     local high = '01'
     local low  = '10'
-    if (motorola) then
-        local high = '10'
-        local low  = '01'
+    if (logicOneIsOneZero) then -- RC6 or Motorola
+        high = '10'
+        low  = '01'
     end
 
     local bitStr = ''
@@ -630,11 +668,11 @@ local function biphase(manchesterTab, binTab, activeBits, input)
     for i=1,activeBits do
         idx = idx+1
         if (input >= bit) then
-            bitStr = '1'..bitStr
+            bitStr = bitStr..'1'
             manchesterTab[idx] = high
             input = input-bit
         else
-            bitStr = '0'..bitStr
+            bitStr = bitStr..'0'
             manchesterTab[idx] = low
         end
         bit = bit/2
@@ -643,33 +681,65 @@ local function biphase(manchesterTab, binTab, activeBits, input)
 end
 
 -- Make pronto code pulse space pairs from the Manchester string
-local function convertManchesterToPronto(irCodeTab, manchesterStr)
-    local cyclesNoChange    = m_basicTimeUnitDivisor
-    local cyclesTransition  = cyclesNoChange * 2
-    local cyclesNoChangeH   = string.format('%04X',cyclesNoChange)
-    local cyclesTransitionH = string.format('%04X',cyclesTransition)
+local function convertManchesterToPronto(irCodeTab, manchesterStr, weirdBiphaseForRC6)
+    local cyclesOneUnit     = m_basicTimeUnitDivisor
+    local cyclesTwoUnits    = m_basicTimeUnitDivisor * 2
+    local cyclesThreeUnits  = m_basicTimeUnitDivisor * 3
+
+    local cyclesOneUnitH    = string.format('%04X',cyclesOneUnit)
+    local cyclesTwoUnitsH   = string.format('%04X',cyclesTwoUnits)
+    local cyclesThreeUnitsH = string.format('%04X',cyclesThreeUnits)
 
     local totalCycles = 0
 
-    -- The RC5 code always starts with '01...' and Motorola with '10...' and pronto with a high
+    -- The RC5 code always starts with '01...' and RC6/Motorola with '10...' and pronto with a high
     -- So for RC5 we need to skip the first zero as pronto assumes the first is a high not a low
     local i=1
-    if (manchesterStr:sub(i,i) == '0') then i = 2 end
+    if (manchesterStr:sub(i,i) == '0') then
+        i = 2
+        totalCycles = cyclesOneUnit
+    end
+
+    local cyclesLogicChangesH = cyclesTwoUnitsH
+    local cyclesLogicChanges  = cyclesTwoUnits
+    local cyclesLogicSameH    = cyclesOneUnitH
+    local cyclesLogicSame     = cyclesOneUnit
     repeat
+        if (weirdBiphaseForRC6) then
+            if (i == 8) then -- value will either be one or three units
+                cyclesLogicChangesH = cyclesThreeUnitsH
+                cyclesLogicChanges  = cyclesThreeUnits
+            elseif (i == 9) then -- if 9 is not skipped it will always be two units
+                cyclesLogicSameH    = cyclesTwoUnitsH
+                cyclesLogicSame     = cyclesTwoUnits
+            elseif (i == 10) then -- value will either be three or two units
+                cyclesLogicChangesH = cyclesThreeUnitsH
+                cyclesLogicChanges  = cyclesThreeUnits
+            elseif ((i == 11) or (i == 12)) then -- back to status quo (need 12 as we may have skipped 11)
+                cyclesLogicChangesH = cyclesTwoUnitsH
+                cyclesLogicChanges  = cyclesTwoUnits
+                cyclesLogicSameH    = cyclesOneUnitH
+                cyclesLogicSame     = cyclesOneUnit
+            end
+        end
+
+        -- test if biphase section is '00' (ie a change from logic high to low) or '11'  (ie a change from logic low to high)
         if (manchesterStr:sub(i,i) == manchesterStr:sub(i+1,i+1)) then
-            irCodeTab[#irCodeTab+1] = cyclesTransitionH
-            totalCycles = totalCycles + cyclesTransition
-            i = i+2
-        else
-            irCodeTab[#irCodeTab+1] = cyclesNoChangeH
-            totalCycles = totalCycles + cyclesNoChange
+            -- need a double length mark or space
+            irCodeTab[#irCodeTab+1] = cyclesLogicChangesH
+            totalCycles = totalCycles + cyclesLogicChanges
+            i = i+2   -- biphase bits merge; do skip
+        else    -- '...01010101...' (all logic lows) or '...10101010...'  (all logic highs)
+            -- need a single length mark or space
+            irCodeTab[#irCodeTab+1] = cyclesLogicSameH
+            totalCycles = totalCycles + cyclesLogicSame
             i = i+1
         end
     until (i >= manchesterStr:len())
 
-    if (#irCodeTab % 2 == 0) then -- even length. last is a pronto low
-        irCodeTab[#irCodeTab+1] = cyclesNoChangeH  -- insert a high to finish off with the lead out
-        totalCycles = totalCycles + cyclesNoChange
+    if (#irCodeTab % 2 == 0) then -- even length. last biphase bit is a pronto low
+        irCodeTab[#irCodeTab+1] = cyclesOneUnitH  -- insert a high to finish off with the lead out
+        totalCycles = totalCycles + cyclesOneUnit
     end
 
     return totalCycles
@@ -1092,7 +1162,7 @@ end
 
     RC5: {36k,msb,889}<1,-1|-1,1>(1,~F:1:6,T:1,D:5,F:6,^114m)+
 
-    RC5 is a 14 bit sequence:
+    RC5 is a 14 bit sequence if including the start bit:
     The most significant bit is sent first (NEC and many others do the opposite)
     1st start bit - always high
     2nd start bit always high unless used as a "field" bit instead
@@ -1100,14 +1170,28 @@ end
     5 bit device address
     6 bit function number (using the "field" bit 7 bit functions can be produced. Not by this code however)
     Carrier is 36 kHz
-    1 – 889us space followed by an 889us pulse burst = 32 cycles at 36kHz
-    0 – 889us pulse burst followed by an 889us space = 32 cycles at 36kHz
+    1 – 889us space followed by an 889us pulse burst = 64 cycles at 36kHz
+    0 – 889us pulse burst followed by an 889us space = 64 cycles at 36kHz
     Frame size start to next start = 113.778 msec = 4096 cycles at 36 kHz
 
-    Refer this link for RC5 decoding:
+    Refer to these links for RC5 decoding:
     https://www.clearwater.com.au/code/rc5
-    and RC6
-    http://www.snrelectronicsblog.com/8051/rc-6-protocol-and-interfacing-with-microcontroller/
+    http://www.pcbheaven.com/userpages/The_Philips_RC5_Protocol/?topic=worklog&p=1
+
+    RC5:  1 is a low to high transition; 0 is a high to low transition (RC6 is the reverse)
+
+              | Start | Field | Toggle|  D4   |  D3   |  D2   |  D1   |  D0   |  F5   |  F4   |  F3   |  F2   |  F1   |  F0   |
+              |   1   |   1   |   1   |   0   |   1   |   0   |   0   |   0   |   0   |   0   |   1   |   0   |   0   |   0   |
+              +   +---+   +---+   +---+---+   +   +---+---+   +---+   +---+   +---+   +---+       +---+---+   +---+   +---+   +
+                  |   |   |   |   |       |       |       |   |   |   |   |   |   |   |   |       |       |   |   |   |   |
+                  |   |   |   |   |       |       |       |   |   |   |   |   |   |   |   |       |       |   |   |   |   |
+                  |   |   |   |   |       |       |       |   |   |   |   |   |   |   |   |       |       |   |   |   |   |
+    >---------+---+   +---+   +---+   +   +---+---+   +   +---+   +---+   +---+   +---+   +---+---+   +   +---+   +---+   +---+---------->
+                0   1   0   1   0   1   1   0   0   1   1   0   1   0   1   0   1   0   1   0   0   1   1   0   1   0   1   0
+
+    Frame length: 4096/36000 = 113.778 msec
+    Bits: (32*(2*(3+5+6))/36000 = 24.889 msec = 896 cycles
+    Lead out: 113.778-24.889 = 88.889 msec = 3200 cycles = 0xC80 or 0xCA0 if last bit is low, giving a biphase space at the end
 ]]
 local function rc5(irCodeTab, binTab, code)
     local clkRate = setClockRate(36000,32)
@@ -1116,17 +1200,153 @@ local function rc5(irCodeTab, binTab, code)
     manchesterTab[2] = '01'       -- start 2 = high
     manchesterTab[3] = '10'       -- toggle bit set to zero (do we need to control this?)
 
-    biphase(manchesterTab, binTab, 5, code.byteD)
-    biphase(manchesterTab, binTab, 6, code.byteF)
+    biphase(manchesterTab, binTab, 5, code.byteD, false)
+    biphase(manchesterTab, binTab, 6, code.byteF, false)
 
     local manchesterStr = table.concat(manchesterTab,'')
     debug('Manchester code: '..manchesterStr)
 
-    local cyc0 = convertManchesterToPronto(irCodeTab, manchesterStr)
-
-    local cyclesFrameLen = round(m_IRclk * 113.778 * 1.0e-3)
+    local cyc0 = convertManchesterToPronto(irCodeTab, manchesterStr, false)
+    local cyclesFrameLen = round(m_IRclk * 113.778e-3)
 
     local cyclesLeadOut = cyclesFrameLen - cyc0
+    irCodeTab[#irCodeTab+1] = string.format('%04X', cyclesLeadOut) -- lead out space
+
+    return clkRate
+end
+
+--[[
+    Note the current toggle bit handling may be insufficient for correct operation.
+
+    RC6: {36k,444,msb}<-1,1|1,-1>(6,-2,1:1,0:3,<-2,2|2,-2>(T:1),D:8,F:8,^107m)+
+
+    Carrier is 36 kHz
+    1 – 444us pulse burst followed by an 444us space = 32 cycles at 36kHz
+    0 – 444us space followed by an 444us pulse burst = 32 cycles at 36kHz
+
+    RC6 (RC6-0-16) is a 16 bit sequence
+    RC6-6-20 (Sky TV) is a 20 bit sequence
+    RC6-6-32 (MCE) is a 32 bit sequence
+    The most significant bit is sent first (NEC and many others do the opposite)
+
+    Lead in pulse: 6 unit mark, 2 unit space = 2.667 + 0.889 = 3.556 msec
+    Start bit: biphase - always set to 1 - effectively part of the lead in
+
+    3 mode bits: "RC6": mode = 000b;   RC6-6-20: mode = 110b  ie 6 dec
+    Toggle bit - set to low (it toggles its value on each key press. Not by this code however)
+    The toggle bit is weird in that it is double the period of a normal bit ie 889us/889us
+
+    Next:
+    Normal RC6:  16 bit operation
+    8 address bits
+    8 function bits
+
+    MCE:   32 bit operation (Microsoft Windows Media Center)
+        The device byte may be split into a non stand toggle bit (msb) and 7 device bits.
+        The weird trailer/toggle bit is always set to zero.
+    8 OEM 1 bits   <-- makes a 36 bit code: MCE = 128 = 80h
+    8 OEM 2 bits   <-- makes a 36 bit code: MCE =  15 = 0fh
+    1 non standard toggle bit
+    7 address bits
+    8 function bits
+
+    Sky TV:   20 bit operation
+    8 address bits
+    4 S bits - possibly equal to 1100 = 0x0c
+    8 function bits
+
+    srcS is typically: -1, 12 or 15
+
+    Refer to these links for RC6 decoding:
+    http://www.snrelectronicsblog.com/8051/rc-6-protocol-and-interfacing-with-microcontroller/
+    http://www.pcbheaven.com/userpages/The_Philips_RC6_Protocol/
+
+    RC6:  1 is a high to low transition; 0 is a low to high transition (RC5 is the reverse)
+
+    Two of eight possible Toggle bit sequences; as general examples:
+
+    Toggle low:
+              | Start |  M2   |  M1   |  M0   | double T bit  |  D7   |  Dx   |  D0   |  F7   |  Fx   |  F0   |
+              |   1   |   0   |   0   |   0   |       0           0   |   0   |   0   |   1   |   0   |   1   |
+              +---+   +   +---+   +---+   +---+       +-------+   +---+   +...+   +---+---+       +...+---+   +
+              |   |       |   |   |   |   |   |       |       |   |   |   |   |   |       |       |       |
+              | 1 | 2   3 | 4 | 5 | 6 | 7 | 8 |   9   |   10  | 11| 12|   |   |   |       |       |       |
+      Leadin  |   |       |   |   |   |   |   |       |       |   |   |   |   |   |       |       |       |
+    >---------+   +---+---+   +---+   +---+   +-------+       +---+   +---+   +---+   +   +---+---+   +   +---+-------------->
+                1   0   0   1   0   1   0   1     0       1     0   1   0   x   0   1   1   0   0   x   1   0
+                1   0   0   1   0   1   0   1     0       1     10101010100110101010101001011010
+    Toggle high:
+              | Start |  M2   |  M1   |  M0   | double T bit  |  D7   |  Dx   |  D0   |  F7   |  Fx   |  F0   |
+              |   1   |   0   |   0   |   0   |       1           0   |   0   |   0   |   1   |   0   |   1   |
+              +---+   +   +---+   +---+   +---+-------+       +   +---+   +...+   +---+---+       +...+---+   +
+              |   |       |   |   |   |   |           |           |   |   |   |   |       |       |       |
+              |   |       |   |   |   |   |           |           |   |   |   |   |       |       |       |
+      Leadin  |   |       |   |   |   |   |           |           |   |   |   |   |       |       |       |
+    >---------+   +---+---+   +---+   +---+   +       +-------+---+   +---+   +---+   +   +---+---+   +   +---+-------------->
+                1   0   0   1   0   1   0   1     1       0     0   1   0   x   0   1   1   0   0   x   1   0
+
+    Frame length: (4096-256)/36000 = 106.667 msec   <-- this a bit of guess
+    Bits: (16*(6+2+2*(1+3+(2*1)+8+8))/36000 = 23.111 msec = 832 cycles
+    Lead out: 106.667-23.111 = 83.556 msec = 3008 cycles = 0xBC0
+]]
+
+local function rc6(irCodeTab, binTab, code, protocol)
+    local clkRate = setClockRate(36000,16)
+
+    local cyclesLeadIn = makeBurst(irCodeTab, 6, 2)
+
+    local manchesterTab = {'10'}  -- start 1 = high
+    binTab[1] = '1'
+
+    if ((protocol == 'RC6') or (protocol == 'RC6-0-16')) then
+        manchesterTab[2] = '010101'   -- mode = 000b
+        binTab[2] = '000'
+    else   -- RC6-6-20 or RC6-6-32 (MCE)
+        manchesterTab[2] = '101001'   -- mode = 110b
+        binTab[2] = '110'
+    end
+
+    -- (double width) toggle bit set to zero (do we need to control this?)
+    manchesterTab[3] = '01'
+    binTab[3] = '0'
+
+    -- srcS is typically: -1, 12 or 15
+    local logicOneIsOneZero = true
+    if ((protocol == 'RC6') or (protocol == 'RC6-0-16')) then
+        biphase(manchesterTab, binTab, 8, code.byteD, logicOneIsOneZero)
+        biphase(manchesterTab, binTab, 8, code.byteF, logicOneIsOneZero)
+    elseif (protocol == 'RC6-6-20') then
+        -- https://www.ofitselfso.com/IRSky/SkyPlusIRRemoteCodes.txt
+        local skyTV = code.byteS   -- 0x0c   rough guess!!!
+        biphase(manchesterTab, binTab, 8, code.byteD, logicOneIsOneZero)
+        biphase(manchesterTab, binTab, 4,      skyTV, logicOneIsOneZero)
+        biphase(manchesterTab, binTab, 8, code.byteF, logicOneIsOneZero)
+    elseif ((protocol == 'RC6-6-32') or (protocol == 'MCE')) then
+        -- https://programtalk.com/vs2/?source=python/4060/EventGhost/eg/Classes/IrDecoder/Rc6.py
+        -- https://docs.microsoft.com/en-us/previous-versions/ms867196(v=msdn.10)?redirectedfrom=MSDN
+        local oem1 = 0x80
+        local oem2 = code.byteS   -- typically 0x0f
+        biphase(manchesterTab, binTab, 8,       oem1, logicOneIsOneZero)
+        biphase(manchesterTab, binTab, 8,       oem2, logicOneIsOneZero)
+
+        -- If the same code is sent twice in a row, then the toggle bit must be used.
+        -- Alternatively you can send the code and then send a code that does nothing.
+        local byte4 = code.byteD  -- bit 7 is set to zero
+        if (m_mceToggle) then byte4 = code.byteD + 0x80 end  -- bit 7 is set to one
+        m_mceToggle = not m_mceToggle
+
+        biphase(manchesterTab, binTab, 8,      byte4, logicOneIsOneZero)
+        biphase(manchesterTab, binTab, 8, code.byteF, logicOneIsOneZero)
+    else
+        debug('Unknown RC6 type')
+    end
+
+    local manchesterStr = table.concat(manchesterTab,'')
+    debug('Manchester code: '..manchesterStr)
+
+    local cyc0 = convertManchesterToPronto(irCodeTab, manchesterStr, true)
+    local cyclesFrameLen = round(m_IRclk * 106.667e-3)
+    local cyclesLeadOut = cyclesFrameLen - cyclesLeadIn - cyc0
     irCodeTab[#irCodeTab+1] = string.format('%04X', cyclesLeadOut) -- lead out space
 
     return clkRate
@@ -1237,7 +1457,10 @@ local function convertCodeToPronto(protocol, code, repeats)
 
     -- set up a jump table for each protocol
     local case = protocol
-    if (code.oemIdM) then case = 'KFAMILY' end   -- only kaseikyo has the variable oemIdM
+    --if (code.oemIdM) then case = 'KFAMILY' end   -- only kaseikyo has the variable oemIdM
+    if (m_kFamily  [protocol]) then case = 'KFAMILY'   end
+    if (m_rc6Family[protocol]) then case = 'RC6FAMILY' end
+
     local action = {
         ['DENON']      = denonSharp,
         ['GC100']      = gc100,
@@ -1245,7 +1468,8 @@ local function convertCodeToPronto(protocol, code, repeats)
         ['KFAMILY']    = kaseikyo,   -- there are more IRP protocols contained in the Kaseikyo family. Refer to m_kFamily.
         ['MITSUBISHI'] = mitsubishiJVC,
         ['RAW']        = raw,
-        ["RC5"]        = rc5,
+        ['RC5']        = rc5,
+        ['RC6FAMILY']  = rc6,
         ['RCA']        = rca,
         ['SHARP']      = denonSharp,
         ['SONY12']     = sony,
@@ -1271,6 +1495,7 @@ local function convertCodeToPronto(protocol, code, repeats)
 
     -- tag the binary log info onto the function code
     code.LogInfo = table.concat(hexTab,', ')..',  '..table.concat(binTab,', ')
+    debug('Binary code: '..code.LogInfo)
 
     -- all table entries are 4 digit hexadecimal strings
     local pcTab = {}
@@ -1345,22 +1570,34 @@ local function sendRemoteCode(remoteIdx, functionIdx)
         return
     end
 
-    -- handle different services used by misc plugins
-    local service = 'urn:a-lurker-com:serviceId:IrTransmitter1'   -- eg BroadLink (default) ServiceIdx = 2
-    if (remote.IRemitter.ServiceIdx == '1') then
-        service = 'urn:micasaverde-com:serviceId:IrTransmitter1'  -- eg GC100
-    end
-
     local device = tonumber(remote.IRemitter.Device)
     if (device == nil) then
         debug('Device ID is invalid', 50)
         return
     end
-
-    debug('IR transmitter being used is Device '..device..' and Service is '..service,50)
+    debug('IR transmitter being used is Device '..device,50)
     debug('Sending prontoCode: '..prontoCode, 50)
-    luup.call_action(service, 'SendProntoCode', {ProntoCode=prontoCode}, device)
-end
+
+    -- handle different services used by the various plugins
+    local serviceIdx = remote.IRemitter.ServiceIdx
+    if     (serviceIdx == '1') then   -- eg GC100
+        luup.call_action('urn:micasaverde-com:serviceId:IrTransmitter1', 'SendProntoCode', {ProntoCode=prontoCode}, device)
+    elseif (serviceIdx == '2') then   -- BroadLink remotes
+        luup.call_action('urn:a-lurker-com:serviceId:IrTransmitter1', 'SendProntoCode', {ProntoCode=prontoCode}, device)
+    elseif (serviceIdx == '3') then   -- Kira remotes
+        -- uses UDP. needs an ip address and an ip port plus conversion of Pronto to Kira IR code
+        -- the Kira plugin names codes, so it can't just send a pronto or Kira IR code
+        -- luup.call_action("urn:dcineco-com:serviceId:KiraTx1","SendIRCode",{IRCodeName="nameofcode",Count=3,Delay=50}, device)
+        debug('Kira: not implemented', 50)
+    elseif (serviceIdx == '4') then   -- Tasmota
+        -- https://tasmota.github.io/docs/IRSend-RAW-Encoding/#irsend-for-raw-ir
+        -- needs a URL and it can't send Pronto but does have its own Raw and a compressed Raw
+        -- eg http://DeviceIPadress/cm?cmnd=IRsend{...}
+        debug('Tasmota: not implemented', 50)
+    else
+        debug('IR transmitter service index is unknown', 50)
+    end
+ end
 
 -- A service in the implementation file
 -- Send an IRP code specified by the user
@@ -1414,7 +1651,7 @@ local function listCodes(remoteList)
     for i=1, #sortedRemotes do
         local remoteName = sortedRemotes[i]
         local remote = remoteList[remoteName]
-        strTab[idx] = '\n\n'..'Remote:        '..remoteName              idx = idx+1
+        strTab[idx] = '\n\n'..'Remote:        '..remoteName            idx = idx+1
         strTab[idx] = 'IR Device:     '..remote.IRemitter.Device       idx = idx+1
         strTab[idx] = 'IR ServiceIdx: '..remote.IRemitter.ServiceIdx   idx = idx+1
         strTab[idx] = 'Model:         '..remote.Model                  idx = idx+1
@@ -1593,6 +1830,7 @@ function luaStartUp(lul_device)
         updateVariable('DebugEnabled', debugEnabled)
     end
     DEBUG_MODE = (debugEnabled == '1')
+    if (m_testing) then DEBUG_MODE = true end
 
     m_json = loadJsonModule()
     if (m_json == nil) then
@@ -1607,9 +1845,14 @@ function luaStartUp(lul_device)
        return false, 'Error: probably in JSON file. Check log.', PLUGIN_NAME
     end
 
-    -- registers a handler for the plugins's web page
-    luup.register_handler('requestMain', PLUGIN_URL_ID)
+    if (m_testing) then
+        checkPlugin()
+    else
+        -- registers a handler for the plugins's web page
+        luup.register_handler('requestMain', PLUGIN_URL_ID)
+    end
 
     -- on success
     return true, 'All OK', PLUGIN_NAME
 end
+
